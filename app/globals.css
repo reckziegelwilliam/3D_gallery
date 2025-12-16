@@ -1,0 +1,94 @@
+@import 'tailwindcss';
+
+@layer base {
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+  
+  :root {
+    --color-gallery-cream: #F5F1E8;
+    --color-gallery-gold: #D4AF37;
+    --color-gallery-warmWhite: #FAF9F6;
+    --color-gallery-darkWood: #3E2723;
+    --color-gallery-accent: #8B7355;
+  }
+
+  body {
+    background-color: var(--color-gallery-warmWhite);
+    color: var(--color-gallery-darkWood);
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@utility bg-gallery-cream {
+  background-color: var(--color-gallery-cream);
+}
+
+@utility bg-gallery-gold {
+  background-color: var(--color-gallery-gold);
+}
+
+@utility bg-gallery-warmWhite {
+  background-color: var(--color-gallery-warmWhite);
+}
+
+@utility bg-gallery-darkWood {
+  background-color: var(--color-gallery-darkWood);
+}
+
+@utility bg-gallery-accent {
+  background-color: var(--color-gallery-accent);
+}
+
+@utility text-gallery-cream {
+  color: var(--color-gallery-cream);
+}
+
+@utility text-gallery-gold {
+  color: var(--color-gallery-gold);
+}
+
+@utility text-gallery-warmWhite {
+  color: var(--color-gallery-warmWhite);
+}
+
+@utility text-gallery-darkWood {
+  color: var(--color-gallery-darkWood);
+}
+
+@utility text-gallery-accent {
+  color: var(--color-gallery-accent);
+}
+
+@utility border-gallery-gold {
+  border-color: var(--color-gallery-gold);
+}
+
+@utility border-gallery-accent {
+  border-color: var(--color-gallery-accent);
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out;
+}
+
