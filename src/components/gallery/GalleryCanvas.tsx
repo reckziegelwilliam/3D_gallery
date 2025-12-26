@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { PhysicsWorld } from './PhysicsWorld';
 import { ProceduralGallery } from './ProceduralGallery';
@@ -14,6 +14,7 @@ import { RoomLabels } from './RoomLabels';
 import { ThankYouMessage } from './ThankYouMessage';
 import { InteractionManager } from './InteractionManager';
 import { GALLERY_CONFIG } from '@/data/galleryConfig';
+import { runArtworkValidation } from '@/utils/validateArtworkPositions';
 
 function LoadingFallback() {
   return (
@@ -25,6 +26,13 @@ function LoadingFallback() {
 }
 
 export function GalleryCanvas() {
+  // Run artwork position validation in development mode
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      runArtworkValidation();
+    }
+  }, []);
+
   return (
     <div className="w-full h-screen">
       <Canvas

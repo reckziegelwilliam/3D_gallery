@@ -8,12 +8,43 @@ export function GalleryLights() {
 
   return (
     <>
-      {/* General ceiling lights - enhanced for 2x artworks */}
-      <pointLight position={[0, 4.0, 0]} intensity={0.8} distance={14} decay={2} />
-      <pointLight position={[-4, 4.0, -4]} intensity={0.7} distance={12} decay={2} />
-      <pointLight position={[4, 4.0, -4]} intensity={0.7} distance={12} decay={2} />
-      <pointLight position={[-4, 4.0, 4]} intensity={0.7} distance={12} decay={2} />
-      <pointLight position={[4, 4.0, 4]} intensity={0.7} distance={12} decay={2} />
+      {/* Global ambient lighting - prevents black backgrounds */}
+      <ambientLight intensity={0.6} />
+      
+      {/* Hemisphere light for natural sky/ground lighting */}
+      <hemisphereLight
+        color="#ffffff"
+        groundColor="#d4c4b0"
+        intensity={0.8}
+        position={[0, 10, 0]}
+      />
+      
+      {/* Directional light for overall brightness */}
+      <directionalLight
+        position={[10, 10, 5]}
+        intensity={0.5}
+        castShadow={false}
+      />
+
+      {/* Room 1: Entrance Gallery */}
+      <pointLight position={[0, 5.0, 3]} intensity={1.2} distance={12} decay={1.8} />
+
+      {/* Room 2: Abstract Wing */}
+      <pointLight position={[-5, 5.0, -3.5]} intensity={1.2} distance={12} decay={1.8} />
+
+      {/* Room 3: Early Works */}
+      <pointLight position={[5, 5.0, -3.5]} intensity={1.2} distance={12} decay={1.8} />
+
+      {/* Room 4: Feature Gallery - enhanced lighting */}
+      <pointLight position={[0, 5.0, -10.5]} intensity={1.4} distance={14} decay={1.8} />
+      
+      {/* Room 4: Back wall dedicated lights */}
+      <pointLight position={[-1.5, 4.0, -13.5]} intensity={1.0} distance={8} decay={2} />
+      <pointLight position={[1.5, 4.0, -13.5]} intensity={1.0} distance={8} decay={2} />
+
+      {/* Archway transition lights */}
+      <pointLight position={[0, 4.5, 0.5]} intensity={0.9} distance={8} decay={2} />
+      <pointLight position={[0, 4.5, -7]} intensity={0.9} distance={8} decay={2} />
 
       {/* Spotlights for each artwork */}
       {artworks.map((artwork) => {

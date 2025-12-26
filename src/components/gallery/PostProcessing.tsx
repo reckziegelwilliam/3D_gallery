@@ -3,13 +3,14 @@
 import React from 'react';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import { useGalleryStore } from '@/store/galleryStore';
+import { GALLERY_CONFIG } from '@/data/galleryConfig';
 
 export function PostProcessing() {
-  // Use Zustand selector to prevent unnecessary re-renders
-  const settings = useGalleryStore((state) => state.settings);
+  // Use Zustand selector with null safety fallback
+  const settings = useGalleryStore((state) => state.settings) ?? GALLERY_CONFIG.defaultSettings;
 
   // Skip post-processing if motion reduced mode is enabled or quality is low
-  if (settings.motionReduced || settings.quality === 'low') {
+  if (!settings || settings.motionReduced || settings.quality === 'low') {
     return null;
   }
 

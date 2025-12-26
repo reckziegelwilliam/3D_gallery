@@ -20,7 +20,7 @@ export function PlayerController() {
   const isInspecting = useGalleryStore((state) => state.isInspecting);
 
   // Camera rotation state
-  const yaw = useRef(0);
+  const yaw = useRef(Math.PI);
   const pitch = useRef(0);
 
   // Pointer lock state
@@ -32,8 +32,8 @@ export function PlayerController() {
   const yAxis = useRef(new THREE.Vector3(0, 1, 0));
 
   useEffect(() => {
-    // Set initial camera position
-    camera.position.set(0, GALLERY_CONFIG.player.eyeHeight, 5);
+    // Set initial camera position - outside entrance, facing gallery
+    camera.position.set(0, GALLERY_CONFIG.player.eyeHeight, 8);
 
     // Get the canvas element
     const canvas = gl.domElement;

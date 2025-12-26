@@ -37,9 +37,7 @@ export default function Home() {
             <br />
             <br />
             This gallery is a small way to honor your incredible talent and the countless hours
-            you've spent bringing beauty into the world through your art. Each piece here tells a
-            story - of landscapes you've loved, moments you've captured, and the emotions you've
-            poured onto canvas.
+            you've spent bringing beauty into the world through your art.
             <br />
             <br />
             Walk through these virtual halls and remember the joy each painting brought you. Your
@@ -47,7 +45,7 @@ export default function Home() {
             do - as something truly special.
             <br />
             <br />
-            With love always,
+            Love,
             <br />
             <span className="not-italic font-medium">Liam</span>
           </p>

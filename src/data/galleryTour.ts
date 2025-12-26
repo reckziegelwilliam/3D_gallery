@@ -3,65 +3,85 @@ import { TourWaypoint } from '@/types/gallery';
 export const galleryTour: TourWaypoint[] = [
   {
     id: 'welcome',
-    position: [0, 1.65, 8],
-    lookAt: [0, 1.5, 0],
-    dwellSeconds: 4,
+    position: [0, 1.65, 7],
+    lookAt: [0, 1.5, 3],
+    dwellSeconds: 5,
     narration:
-      "Welcome to Mom's Gallery. Let me guide you through some of the most special pieces in this collection.",
+      "Welcome to Leslie's Gallery. We'll journey through four distinct rooms, each showcasing a different aspect of her artistic talent.",
   },
+  // ROOM 1: Entrance Gallery
   {
     id: 'mountain-sunrise',
-    position: [-5, 1.65, 1],
-    lookAt: [-7, 1.5, 0],
+    position: [-2, 1.65, 4.5],
+    lookAt: [-3.5, 1.5, 4],
     dwellSeconds: 7,
     artworkId: 'mountain-sunrise',
     narration:
-      'Mountain Sunrise captures the breathtaking beauty of dawn. The way Mom captures light in her landscapes is truly remarkable.',
+      'We begin with Mountain Sunrise. The way Leslie captures light in her landscapes is truly remarkable.',
   },
   {
     id: 'coastal-serenity',
-    position: [-5, 1.65, -2],
-    lookAt: [-7, 1.5, -3],
+    position: [2, 1.65, 2.5],
+    lookAt: [3.5, 1.5, 2],
     dwellSeconds: 6,
     artworkId: 'coastal-serenity',
     narration:
       'This coastal scene brings back memories of family trips. Notice the delicate brushwork in the waves.',
   },
+  // Transition to Room 2
   {
-    id: 'garden-bloom',
-    position: [0, 1.65, -6],
-    lookAt: [0, 1.5, -8.5],
-    dwellSeconds: 6,
-    artworkId: 'garden-bloom',
+    id: 'entering-abstract',
+    position: [0, 1.65, 0],
+    lookAt: [-5, 1.5, -3.5],
+    dwellSeconds: 3,
     narration:
-      'Garden in Bloom showcases vibrant colors and life. Mom has always had a gift for bringing gardens to life, both on canvas and in reality.',
+      'Moving through to the abstract wing, where we see a different facet of her creativity...',
   },
+  // ROOM 2: Abstract Wing
   {
     id: 'color-symphony',
-    position: [5, 1.65, 1],
-    lookAt: [7, 1.5, 0],
+    position: [-6, 1.65, -2.5],
+    lookAt: [-7.5, 1.5, -3],
     dwellSeconds: 7,
     artworkId: 'color-symphony',
     narration:
-      'Moving into the abstract collection, Color Symphony shows a different facet of her artistic expression - bold and fearless.',
+      'Color Symphony showcases bold, fearless expression. Abstract art reveals emotion in its purest form.',
   },
+  // ROOM 3: Early Works
   {
     id: 'first-landscape',
-    position: [-5, 1.65, 3],
-    lookAt: [-7, 1.5, 2],
+    position: [6, 1.65, -2.5],
+    lookAt: [7.5, 1.5, -3],
     dwellSeconds: 7,
     artworkId: 'first-landscape',
     narration:
-      'This is one of the earliest pieces in the collection. Looking at it now, you can see the foundation of a lifelong passion.',
+      'In the Early Works chamber, we see where it all began. This is one of the earliest pieces in the collection.',
   },
+  // Transition to Room 4
+  {
+    id: 'entering-feature',
+    position: [0, 1.65, -7],
+    lookAt: [0, 1.5, -10.5],
+    dwellSeconds: 3,
+    narration:
+      'And now, we arrive at the featured collection - the finest works...',
+  },
+  // ROOM 4: Feature Gallery - Finale
   {
     id: 'golden-hour',
-    position: [5, 1.65, -1],
-    lookAt: [7, 1.5, -2],
+    position: [1.5, 1.65, -11.5],
+    lookAt: [2.5, 1.5, -12],
     dwellSeconds: 8,
     artworkId: 'golden-hour',
     narration:
-      'We finish with Golden Hour, one of the most recent works. The growth, the mastery, the beauty - it all comes together here. Thank you for sharing your gift with us, Mom.',
+      'We finish with Golden Hour, one of the most recent works. The growth, the mastery, the beauty - it all comes together here.',
+  },
+  {
+    id: 'thank-you-finale',
+    position: [0, 1.65, -12],
+    lookAt: [0, 2.2, -13.8],
+    dwellSeconds: 10,
+    narration:
+      'And finally, a message of gratitude for sharing this incredible gift with all of us.',
   },
 ];
-

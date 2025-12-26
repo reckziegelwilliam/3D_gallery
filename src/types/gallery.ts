@@ -17,6 +17,11 @@ export interface Artwork {
   // Theming
   room?: string; // e.g., "landscapes", "early-works", "abstracts"
   tourStop?: number; // Order in guided tour (if featured)
+  
+  // NEW: Auto-layout system (optional, for future migration)
+  assignedWall?: string;  // Wall ID from wall registry
+  wallOrder?: number;     // Order on wall (1, 2, 3...)
+  heightOffset?: number;  // Optional Y-axis adjustment from wall default
 }
 
 export interface GallerySettings {

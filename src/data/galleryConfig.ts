@@ -12,18 +12,18 @@ export const GALLERY_CONFIG = {
   gallery: {
     length: 15, // meters
     width: 12, // meters
-    wallHeight: 4.5, // meters (increased from 3m for grander feel)
-    doorwayHeight: 2.8, // meters (proportionally increased)
+    wallHeight: 6.0, // meters (increased for grand, spacious feel)
+    doorwayHeight: 3.2, // meters (proportionally increased)
     doorwayWidth: 1.2, // meters
   },
 
   // Artwork placement
   artwork: {
     defaultHeight: 1.5, // meters (eye level)
-    minSpacing: 2.5, // meters between artworks (increased for 2x pieces)
-    frameThickness: 0.06, // meters (thicker frame for larger artworks)
-    frameBorderWidth: 0.15, // meters (thicker border for premium look)
-    sizeMultiplier: 2.0, // Scale factor for all artworks (2x larger - statement pieces!)
+    minSpacing: 0.8, // meters between artworks (optimized for 40 artworks)
+    frameThickness: 0.06, // meters (lighter frame for better performance)
+    frameBorderWidth: 0.10, // meters (thinner border for cleaner look)
+    sizeMultiplier: 1.0, // Scale factor for all artworks (1.0x - actual size)
   },
 
   // Interaction

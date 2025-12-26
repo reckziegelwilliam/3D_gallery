@@ -1,14 +1,27 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { GalleryState, GallerySettings } from '@/types/gallery';
-import { artworks } from '@/data/artworks';
+import { artworks as artworksData } from '@/data/artworks';
 import { GALLERY_CONFIG } from '@/data/galleryConfig';
+import { autoLayoutGallery } from '@/utils/autoLayout';
+import { WALL_REGISTRY } from '@/data/wallDefinitions';
+
+// Process artworks through auto-layout system
+console.log('🔄 Starting auto-layout for', artworksData.length, 'artworks...');
+const layoutedArtworks = autoLayoutGallery(artworksData, WALL_REGISTRY);
+
+console.log('✨ Auto-layout complete:', layoutedArtworks.length, 'artworks positioned');
+console.log('📊 Sample positions:', layoutedArtworks.slice(0, 3).map(a => ({
+  id: a.id,
+  pos: a.position,
+  rot: a.rotation,
+})));
 
 export const useGalleryStore = create<GalleryState>()(
   persist(
     (set, get) => ({
       // Initial state
-      artworks: artworks,
+      artworks: layoutedArtworks,
       activeArtworkId: null,
       isInspecting: false,
       inspectIndex: 0,
