@@ -44,6 +44,19 @@ export interface TourWaypoint {
   narration?: string; // Text shown during stop
 }
 
+// Persisted artwork placement data
+export interface ArtworkPlacement {
+  id: string;
+  assignedWall?: string;
+  wallOrder?: number;
+  heightOffset?: number;
+}
+
+// Full artwork data for uploaded artworks (persisted to localStorage)
+export interface UploadedArtwork extends Omit<Artwork, 'position' | 'rotation'> {
+  isUploaded: true; // Marker to distinguish from default artworks
+}
+
 export interface GalleryState {
   // Artwork management
   artworks: Artwork[];
@@ -58,6 +71,9 @@ export interface GalleryState {
   // Settings
   settings: GallerySettings;
 
+  // Admin state
+  isAdminMode: boolean;
+
   // Actions
   setActiveArtwork: (id: string | null) => void;
   enterInspectMode: (artworkId: string) => void;
@@ -68,5 +84,17 @@ export interface GalleryState {
   stopTour: () => void;
   advanceTour: () => void;
   updateSettings: (partial: Partial<GallerySettings>) => void;
+
+  // Admin actions
+  setAdminMode: (enabled: boolean) => void;
+  updateArtworkWall: (artworkId: string, wallId: string, wallOrder: number) => void;
+  updateArtworkHeight: (artworkId: string, heightOffset: number) => void;
+  resetToDefaults: () => void;
+  exportLayout: () => string;
+  importLayout: (json: string) => boolean;
+
+  // Artwork CRUD actions
+  addArtwork: (artwork: Artwork) => void;
+  removeArtwork: (artworkId: string) => void;
 }
 
