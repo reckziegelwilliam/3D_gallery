@@ -20,7 +20,7 @@ export function PlayerController() {
   const isInspecting = useGalleryStore((state) => state.isInspecting);
 
   // Camera rotation state
-  const yaw = useRef(Math.PI);
+  const yaw = useRef(0); // Start facing opposite direction (away from gallery entrance)
   const pitch = useRef(0);
 
   // Pointer lock state

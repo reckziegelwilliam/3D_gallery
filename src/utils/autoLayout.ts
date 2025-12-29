@@ -16,25 +16,28 @@ function getArtworkSize(artwork: Pick<Artwork, 'realSizeMeters'>) {
 }
 
 /**
- * Calculate the outward-facing offset from a wall based on its rotation
- * Returns a 3D vector that points away from the wall surface
+ * Calculate rotation euler angles from a normal vector
+ * The normal points in the direction artwork should face
  */
-function getWallOffset(rotation: [number, number, number]): [number, number, number] {
-  const yRotation = rotation[1];
+function rotationFromNormal(normal: [number, number, number]): [number, number, number] {
+  const yRotation = Math.atan2(normal[0], normal[2]);
+  return [0, yRotation, 0];
+}
+
+/**
+ * Calculate wall offset from normal vector
+ * Positions artwork in front of the wall surface
+ */
+function getWallOffsetFromNormal(normal: [number, number, number]): [number, number, number] {
   const wallThickness = 0.2; // Same as in ProceduralGallery
   const artworkOffset = 0.05; // Small offset to ensure artwork is in front of wall
   const totalOffset = (wallThickness / 2) + artworkOffset;
   
-  // Calculate offset based on wall rotation
-  // Rotation of 0: wall faces north (+Z), offset should be -Z
-  // Rotation of π: wall faces south (-Z), offset should be +Z
-  // Rotation of π/2: wall faces east (+X), offset should be +X
-  // Rotation of -π/2: wall faces west (-X), offset should be -X
-  
-  const offsetX = Math.sin(yRotation) * totalOffset;
-  const offsetZ = -Math.cos(yRotation) * totalOffset;
-  
-  return [offsetX, 0, offsetZ];
+  return [
+    normal[0] * totalOffset,
+    0,
+    normal[2] * totalOffset,
+  ];
 }
 
 /**
@@ -83,8 +86,11 @@ export function positionArtworksOnWall(
   // Center artworks on wall (within safe bounds)
   const startPos = safeMinPos + Math.max(0, (usableSpace - totalWidth) / 2);
   
-  // Calculate wall offset (to position artwork in front of wall, not inside it)
-  const wallOffset = getWallOffset(wall.rotation);
+  // Calculate wall offset from normal (to position artwork in front of wall, not inside it)
+  const wallOffset = getWallOffsetFromNormal(wall.normal);
+  
+  // Calculate artwork rotation from wall normal
+  const artworkRotation = rotationFromNormal(wall.normal);
   
   // Position each artwork
   const positioned: Artwork[] = [];
@@ -156,14 +162,15 @@ export function positionArtworksOnWall(
         artworkEdges: `[${(clampedPos - halfWidth).toFixed(2)}, ${(clampedPos + halfWidth).toFixed(2)}]`,
         wallOffset,
         calculatedPos: position,
-        rotation: wall.rotation,
+        normal: wall.normal,
+        rotation: artworkRotation,
       });
     }
     
     positioned.push({
       ...art,
       position,
-      rotation: wall.rotation,
+      rotation: artworkRotation,
     });
     
     // Move to next position

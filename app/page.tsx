@@ -22,7 +22,7 @@ export default function Home() {
           <h1 className="text-6xl md:text-7xl font-serif font-bold text-gallery-darkWood mb-4">
             Welcome to
             <br />
-            <span className="text-gallery-gold">Mom's Gallery</span>
+            <span className="text-gallery-gold">Leslie's Gallery</span>
           </h1>
 
           <p className="text-xl md:text-2xl text-gallery-accent max-w-2xl mx-auto leading-relaxed">
@@ -33,7 +33,6 @@ export default function Home() {
         {/* Personal Message */}
         <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-xl p-8 max-w-2xl mx-auto">
           <p className="text-lg text-gallery-darkWood leading-relaxed italic">
-            Dear Mom,
             <br />
             <br />
             This gallery is a small way to honor your incredible talent and the countless hours
@@ -103,7 +102,7 @@ export default function Home() {
 
         {/* Footer Note */}
         <p className="text-sm text-gallery-accent/70 pt-8">
-          Merry Christmas 2024 • Made with love for Mom
+          Merry Christmas 2025 • Made with love for Leslie
         </p>
       </div>
     </main>

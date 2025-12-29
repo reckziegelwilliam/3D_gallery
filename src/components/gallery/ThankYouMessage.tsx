@@ -62,7 +62,7 @@ export function ThankYouMessage() {
         renderOrder={5}
         depthOffset={-1}
       >
-        Thank You, Mom
+        Thank You
       </Text>
       
       {/* Decorative line */}

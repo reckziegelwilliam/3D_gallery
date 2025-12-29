@@ -1,88 +1,113 @@
 'use client';
 
-import React, { useMemo, useRef } from 'react';
+import React, { useRef, useState, Suspense } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
+import { useTexture } from '@react-three/drei';
 import { Artwork } from '@/types/gallery';
 import * as THREE from 'three';
 import { GALLERY_CONFIG } from '@/data/galleryConfig';
-import { ArtworkPlaque } from './ArtworkPlaque';
 
 interface ArtworkFrameProps {
   artwork: Artwork;
 }
 
 // ========================================
-// SHARED GEOMETRIES (Instancing)
+// TEXTURED CANVAS COMPONENT (Best Practices)
 // ========================================
-// Create geometry cache at module level to share across all frames
-const GEOMETRY_CACHE = new Map<string, THREE.BufferGeometry>();
+// Uses useTexture from drei with Suspense and ErrorBoundary
 
-function getSharedGeometry(
-  type: 'frame' | 'canvas' | 'hitbox',
-  width: number,
-  height: number,
-  depth = 0.06
-): THREE.BufferGeometry {
-  const key = `${type}-${width.toFixed(2)}-${height.toFixed(2)}-${depth.toFixed(2)}`;
-  
-  if (!GEOMETRY_CACHE.has(key)) {
-    let geometry: THREE.BufferGeometry;
-    
-    if (type === 'frame') {
-      geometry = new THREE.BoxGeometry(width, height, depth);
-    } else {
-      geometry = new THREE.PlaneGeometry(width, height);
-    }
-    
-    GEOMETRY_CACHE.set(key, geometry);
-  }
-  
-  return GEOMETRY_CACHE.get(key)!;
+interface TexturedCanvasProps {
+  imagePath: string;
+  width: number;
+  height: number;
+  wallOffset: number;
 }
 
-// ========================================
-// SHARED MATERIALS (Instancing)
-// ========================================
-const FRAME_MATERIAL = new THREE.MeshStandardMaterial({
-  color: '#3E2723',
-  roughness: 0.6,
-  metalness: 0.1,
-});
-
-const CANVAS_COLORS = [
-  '#E8D4C0', '#C9B8A8', '#D4C4B0', '#B8A898', 
-  '#E0D0C0', '#D8C8B8', '#C8B8A8', '#E0CDB0'
-];
-
-// Material cache for canvas colors
-const CANVAS_MATERIAL_CACHE = new Map<string, THREE.MeshStandardMaterial>();
-
-function getCanvasMaterial(artworkId: string): THREE.MeshStandardMaterial {
-  if (!CANVAS_MATERIAL_CACHE.has(artworkId)) {
-    // Simple hash from artwork ID
-    let hash = 0;
-    for (let i = 0; i < artworkId.length; i++) {
-      hash = artworkId.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const colorIndex = Math.abs(hash) % CANVAS_COLORS.length;
-    
-    const material = new THREE.MeshStandardMaterial({
-      color: CANVAS_COLORS[colorIndex],
-      roughness: 0.7,
-    });
-    
-    CANVAS_MATERIAL_CACHE.set(artworkId, material);
-  }
-  
-  return CANVAS_MATERIAL_CACHE.get(artworkId)!;
+// Fallback shown while loading or on error
+function CanvasFallback({ width, height, wallOffset }: Omit<TexturedCanvasProps, 'imagePath'>) {
+  return (
+    <mesh position={[0, 0, wallOffset + 0.001]} receiveShadow={false}>
+      <planeGeometry args={[width, height]} />
+      <meshStandardMaterial color="#E8D4C0" roughness={0.7} side={THREE.DoubleSide} />
+    </mesh>
+  );
 }
+
+// Inner component that uses useTexture (must be wrapped in Suspense)
+function TexturedCanvasInner({ imagePath, width, height, wallOffset }: TexturedCanvasProps) {
+  const texture = useTexture(imagePath, (tex) => {
+    // Configure texture on load for proper color and quality
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.generateMipmaps = true;
+  });
+
+  return (
+    <mesh position={[0, 0, wallOffset + 0.001]} receiveShadow={false}>
+      <planeGeometry args={[width, height]} />
+      <meshStandardMaterial map={texture} roughness={0.8} side={THREE.DoubleSide} />
+    </mesh>
+  );
+}
+
+// Error boundary for texture loading failures
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+  fallback: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+class TextureErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    console.error('Texture loading error:', error, errorInfo);
+  }
+
+  render(): React.ReactNode {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
+// Main TexturedCanvas with Suspense and Error Boundary
+function TexturedCanvas({ imagePath, width, height, wallOffset }: TexturedCanvasProps) {
+  const fallback = <CanvasFallback width={width} height={height} wallOffset={wallOffset} />;
+  
+  return (
+    <TextureErrorBoundary fallback={fallback}>
+      <Suspense fallback={fallback}>
+        <TexturedCanvasInner
+          imagePath={imagePath}
+          width={width}
+          height={height}
+          wallOffset={wallOffset}
+        />
+      </Suspense>
+    </TextureErrorBoundary>
+  );
+}
+
 
 // ========================================
 // ARTWORK FRAME COMPONENT
 // ========================================
 
 export function ArtworkFrame({ artwork }: ArtworkFrameProps) {
-  const { position, rotation, realSizeMeters } = artwork;
+  const { position, rotation, realSizeMeters, imagePath } = artwork;
   const { camera } = useThree();
   const groupRef = useRef<THREE.Group>(null);
   
@@ -98,7 +123,7 @@ export function ArtworkFrame({ artwork }: ArtworkFrameProps) {
   const frameHeight = scaledHeight + frameBorder * 2;
   
   // LOD state
-  const [lodLevel, setLodLevel] = React.useState<'full' | 'simplified' | 'hidden'>('full');
+  const [lodLevel, setLodLevel] = useState<'full' | 'simplified' | 'hidden'>('full');
   
   // Calculate LOD based on camera distance
   useFrame(() => {
@@ -108,27 +133,17 @@ export function ArtworkFrame({ artwork }: ArtworkFrameProps) {
     const distance = camera.position.distanceTo(artworkPos);
     
     // LOD levels:
-    // 0-15m: Full detail
-    // 15-30m: Simplified (no frame detail)
-    // 30m+: Hidden (frustum culling)
-    if (distance < 15) {
+    // 0-25m: Full detail (with frame)
+    // 25-40m: Simplified (no frame detail)
+    // 40m+: Hidden (frustum culling)
+    if (distance < 25) {
       if (lodLevel !== 'full') setLodLevel('full');
-    } else if (distance < 30) {
+    } else if (distance < 40) {
       if (lodLevel !== 'simplified') setLodLevel('simplified');
     } else {
       if (lodLevel !== 'hidden') setLodLevel('hidden');
     }
   });
-  
-  // Get shared geometries (instanced)
-  const geometries = useMemo(() => ({
-    frame: getSharedGeometry('frame', frameWidth, frameHeight, frameThickness),
-    canvas: getSharedGeometry('canvas', scaledWidth, scaledHeight),
-    hitbox: getSharedGeometry('hitbox', frameWidth + 0.1, frameHeight + 0.1),
-  }), [frameWidth, frameHeight, frameThickness, scaledWidth, scaledHeight]);
-  
-  // Get shared materials
-  const canvasMaterial = useMemo(() => getCanvasMaterial(artwork.id), [artwork.id]);
   
   const wallOffset = 0.02;
   
@@ -142,26 +157,29 @@ export function ArtworkFrame({ artwork }: ArtworkFrameProps) {
       {/* Render based on LOD level */}
       {lodLevel === 'full' ? (
         <>
-          {/* Full detail: Frame + Canvas + Plaque */}
+          {/* Full detail: Frame + Textured Canvas + Plaque */}
           <mesh position={[0, 0, wallOffset - frameThickness / 2]} castShadow={false}>
-            <primitive object={geometries.frame} />
-            <primitive object={FRAME_MATERIAL} attach="material" />
+            <boxGeometry args={[frameWidth, frameHeight, frameThickness]} />
+            <meshStandardMaterial color="#3E2723" roughness={0.6} metalness={0.1} />
           </mesh>
           
-          <mesh position={[0, 0, wallOffset + 0.001]} receiveShadow={false}>
-            <primitive object={geometries.canvas} />
-            <primitive object={canvasMaterial} attach="material" />
-          </mesh>
-          
-          <ArtworkPlaque artwork={artwork} artworkHeight={scaledHeight} />
+          {/* Textured artwork with built-in fallback */}
+          <TexturedCanvas 
+            imagePath={imagePath} 
+            width={scaledWidth} 
+            height={scaledHeight}
+            wallOffset={wallOffset}
+          />
         </>
       ) : (
         <>
-          {/* Simplified: Just colored plane (no frame) */}
-          <mesh position={[0, 0, wallOffset]} receiveShadow={false}>
-            <primitive object={geometries.canvas} />
-            <primitive object={canvasMaterial} attach="material" />
-          </mesh>
+          {/* Simplified: Textured plane (no frame) */}
+          <TexturedCanvas 
+            imagePath={imagePath} 
+            width={scaledWidth} 
+            height={scaledHeight}
+            wallOffset={wallOffset}
+          />
         </>
       )}
       
@@ -171,7 +189,7 @@ export function ArtworkFrame({ artwork }: ArtworkFrameProps) {
         visible={false}
         userData={{ artworkId: artwork.id }}
       >
-        <primitive object={geometries.hitbox} />
+        <planeGeometry args={[frameWidth + 0.1, frameHeight + 0.1]} />
         <meshBasicMaterial transparent opacity={0} />
       </mesh>
     </group>

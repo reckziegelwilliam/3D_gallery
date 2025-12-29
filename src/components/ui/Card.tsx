@@ -16,15 +16,12 @@ export function Card({ artwork, onClick }: CardProps) {
       <div className="relative w-full" style={{ paddingTop: '75%' }}>
         <Image
           src={artwork.imagePath}
-          alt={artwork.title}
+          alt="Artwork"
           fill
           className="object-cover"
         />
       </div>
       <div className="p-4">
-        <h3 className="text-lg font-serif font-semibold text-gallery-darkWood mb-1 group-hover:text-gallery-gold transition-colors">
-          {artwork.title}
-        </h3>
         <p className="text-sm text-gallery-accent">
           {artwork.year} • {artwork.medium}
         </p>

@@ -1,4 +1,4 @@
-# Mom's Virtual Gallery 🎨
+# Leslie's Gallery 🎨
 
 A beautiful, immersive 3D virtual art gallery built with Next.js, Three.js, and React Three Fiber. This project creates a realistic virtual space to showcase artwork with first-person exploration, guided tours, and accessible 2D fallback viewing.
 
@@ -229,7 +229,7 @@ This is a personal project created as a gift. Feel free to use and modify for yo
 
 ## Credits
 
-Built with love for Mom 💝
+Built with love for Leslie 💝
 
 **Technologies:**
 - [Next.js](https://nextjs.org/)

@@ -112,7 +112,7 @@ export function InspectOverlay() {
             <div className="relative w-full" style={{ aspectRatio: `${artwork.realSizeMeters.width}/${artwork.realSizeMeters.height}` }}>
               <Image
                 src={artwork.imagePath}
-                alt={artwork.title}
+                alt="Artwork"
                 fill
                 className="object-contain"
                 priority
@@ -123,9 +123,6 @@ export function InspectOverlay() {
           {/* Artwork details */}
           <div className="flex flex-col justify-center space-y-6 max-h-[70vh] overflow-y-auto">
             <div>
-              <h2 className="text-4xl font-serif font-bold text-gallery-darkWood mb-2">
-                {artwork.title}
-              </h2>
               <p className="text-xl text-gallery-accent">
                 {artwork.year} • {artwork.medium}
               </p>
@@ -136,13 +133,6 @@ export function InspectOverlay() {
                 {artwork.description}
               </p>
 
-              {artwork.personalNote && (
-                <div className="bg-gallery-gold/10 border-l-4 border-gallery-gold p-4 rounded">
-                  <p className="text-gallery-darkWood italic leading-relaxed">
-                    {artwork.personalNote}
-                  </p>
-                </div>
-              )}
             </div>
 
             {artwork.room && (

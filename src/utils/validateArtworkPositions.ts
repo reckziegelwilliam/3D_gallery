@@ -123,7 +123,7 @@ export function runArtworkValidation() {
         : Math.abs(bounds1.centerX - bounds2.centerX);
       const required = bounds1.halfWidth + bounds2.halfWidth + GALLERY_CONFIG.artwork.minSpacing;
       
-      console.log(`  • "${art1.title}" and "${art2.title}"`);
+      console.log(`  • "${art1.id}" and "${art2.id}"`);
       console.log(`    ${id1}: [${art1.position.join(', ')}]`);
       console.log(`      Size: ${bounds1.width.toFixed(2)}m × ${bounds1.height.toFixed(2)}m`);
       console.log(`    ${id2}: [${art2.position.join(', ')}]`);
@@ -139,7 +139,7 @@ export function runArtworkValidation() {
     
     validation.doorwayConflicts.forEach(({ artwork, doorway }) => {
       const bounds = getArtworkBounds(artwork);
-      console.log(`  • "${artwork.title}" intrudes into ${doorway}`);
+      console.log(`  • "${artwork.id}" intrudes into ${doorway}`);
       console.log(`    Position: [${artwork.position.join(', ')}]`);
       console.log(`    Size: ${bounds.width.toFixed(2)}m × ${bounds.height.toFixed(2)}m`);
       console.log(`    ⚠️  May obstruct passage\n`);
@@ -202,12 +202,12 @@ export function runArtworkValidation() {
           const newZ = art1.position[2] < art2.position[2]
             ? art1.position[2] + required
             : art1.position[2] - required;
-          console.log(`  Move "${art2.title}" Z from ${art2.position[2]} to ${newZ.toFixed(2)}`);
+          console.log(`  Move "${art2.id}" Z from ${art2.position[2]} to ${newZ.toFixed(2)}`);
         } else {
           const newX = art1.position[0] < art2.position[0]
             ? art1.position[0] + required
             : art1.position[0] - required;
-          console.log(`  Move "${art2.title}" X from ${art2.position[0]} to ${newX.toFixed(2)}`);
+          console.log(`  Move "${art2.id}" X from ${art2.position[0]} to ${newX.toFixed(2)}`);
         }
       });
     }
@@ -238,11 +238,11 @@ export function generateCollisionReport(): string {
       const bounds1 = getArtworkBounds(art1);
       const bounds2 = getArtworkBounds(art2);
       
-      report += `### Collision ${index + 1}: ${art1.title} ↔ ${art2.title}\n\n`;
-      report += `- **${art1.title}**\n`;
+      report += `### Collision ${index + 1}: ${art1.id} ↔ ${art2.id}\n\n`;
+      report += `- **${art1.id}**\n`;
       report += `  - Position: [${art1.position.join(', ')}]\n`;
       report += `  - Size: ${bounds1.width.toFixed(2)}m × ${bounds1.height.toFixed(2)}m\n`;
-      report += `- **${art2.title}**\n`;
+      report += `- **${art2.id}**\n`;
       report += `  - Position: [${art2.position.join(', ')}]\n`;
       report += `  - Size: ${bounds2.width.toFixed(2)}m × ${bounds2.height.toFixed(2)}m\n\n`;
     });

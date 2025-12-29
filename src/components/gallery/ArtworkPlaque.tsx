@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
 import { Artwork } from '@/types/gallery';
@@ -10,14 +10,6 @@ interface ArtworkPlaqueProps {
   artwork: Artwork;
   artworkHeight: number; // Scaled height
 }
-
-// Shared plaque geometries (instanced)
-const PLAQUE_GEOMETRY = new THREE.PlaneGeometry(0.7, 0.15);
-const PLAQUE_MATERIAL = new THREE.MeshStandardMaterial({
-  color: '#2C1810',
-  roughness: 0.3,
-  metalness: 0.1,
-});
 
 export function ArtworkPlaque({ artwork, artworkHeight }: ArtworkPlaqueProps) {
   const { camera } = useThree();
@@ -45,27 +37,15 @@ export function ArtworkPlaque({ artwork, artworkHeight }: ArtworkPlaqueProps) {
 
   return (
     <group position={[0, plaqueYOffset, 0.06]}>
-      {/* Plaque background - shared geometry */}
+      {/* Plaque background - inline geometry/material */}
       <mesh>
-        <primitive object={PLAQUE_GEOMETRY} />
-        <primitive object={PLAQUE_MATERIAL} attach="material" />
+        <planeGeometry args={[0.7, 0.15]} />
+        <meshStandardMaterial color="#2C1810" roughness={0.3} metalness={0.1} />
       </mesh>
-      
-      {/* Title - only rendered when nearby */}
-      <Text
-        position={[0, 0.03, 0.001]}
-        fontSize={0.045}
-        color="#D4AF37"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={0.65}
-      >
-        {artwork.title}
-      </Text>
       
       {/* Year */}
       <Text
-        position={[0, -0.03, 0.001]}
+        position={[0, 0, 0.001]}
         fontSize={0.035}
         color="#A0896C"
         anchorX="center"

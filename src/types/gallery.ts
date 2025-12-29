@@ -1,13 +1,13 @@
 export interface Artwork {
   id: string;
-  title: string;
+  title?: string;
   year: number;
   medium: string;
   imagePath: string; // e.g., "/art/artwork-01.jpg"
 
   // Personal story
   description: string;
-  personalNote?: string; // Your message to mom
+  personalNote?: string;
 
   // 3D placement
   position: [number, number, number]; // xyz in meters

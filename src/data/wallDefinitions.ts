@@ -8,6 +8,7 @@ export type WallDefinition = {
   // Wall position and orientation
   position: [number, number, number];  // Center point
   rotation: [number, number, number];  // Wall rotation
+  normal: [number, number, number];    // Direction artwork faces (into room)
   // Dimensions and constraints
   length: number;  // Usable length for artworks
   axis: 'x' | 'z';  // Which axis artworks are arranged along
@@ -28,6 +29,7 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'West Wall',
     position: [-3.5, 1.5, 3],
     rotation: [0, Math.PI / 2, 0],
+    normal: [1, 0, 0],  // Artwork faces +X (east, into room)
     length: 5,
     axis: 'z',
     minPos: 0.5,
@@ -40,6 +42,7 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'East Wall',
     position: [3.5, 1.5, 3],
     rotation: [0, -Math.PI / 2, 0],
+    normal: [-1, 0, 0],  // Artwork faces -X (west, into room)
     length: 5,
     axis: 'z',
     minPos: 0.5,
@@ -52,6 +55,7 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'South Wall (Left Section)',
     position: [-2.5, 1.5, 5.5],
     rotation: [0, Math.PI, 0],
+    normal: [0, 0, -1],  // Artwork faces -Z (north, into room)
     length: 2.5,
     axis: 'x',
     minPos: -3.8,
@@ -63,10 +67,35 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'South Wall (Right Section)',
     position: [2.5, 1.5, 5.5],
     rotation: [0, Math.PI, 0],
+    normal: [0, 0, -1],  // Artwork faces -Z (north, into room)
     length: 2.5,
     axis: 'x',
     minPos: 1.3,
     maxPos: 3.8,
+  },
+  {
+    id: 'room1-north-left',
+    room: 'Room 1',
+    name: 'North Wall (Left Section)',
+    position: [-2.5, 1.5, 0.5],
+    rotation: [0, 0, 0],
+    normal: [0, 0, 1],  // Artwork faces +Z (south, into room)
+    length: 2,
+    axis: 'x',
+    minPos: -3.5,
+    maxPos: -1.5,
+  },
+  {
+    id: 'room1-north-right',
+    room: 'Room 1',
+    name: 'North Wall (Right Section)',
+    position: [2.5, 1.5, 0.5],
+    rotation: [0, 0, 0],
+    normal: [0, 0, 1],  // Artwork faces +Z (south, into room)
+    length: 2,
+    axis: 'x',
+    minPos: 1.5,
+    maxPos: 3.5,
   },
   
   // ROOM 2: Abstract Wing
@@ -76,6 +105,7 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'West Wall',
     position: [-7.5, 1.5, -3.5],
     rotation: [0, Math.PI / 2, 0],
+    normal: [1, 0, 0],  // Artwork faces +X (east, into room)
     length: 5,
     axis: 'z',
     minPos: -6,
@@ -87,6 +117,7 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'North Wall (Left Section)',
     position: [-6.5, 1.5, -6.0],
     rotation: [0, 0, 0],
+    normal: [0, 0, 1],  // Artwork faces +Z (south, into room)
     length: 2,
     axis: 'x',
     minPos: -7.5,
@@ -98,6 +129,7 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'East Divider (to Room 3)',
     position: [-2.5, 1.5, -3.5],
     rotation: [0, -Math.PI / 2, 0],
+    normal: [-1, 0, 0],  // Artwork faces -X (west, into Room 2)
     length: 5,
     axis: 'z',
     minPos: -6,
@@ -109,6 +141,7 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'South Wall (Left Section)',
     position: [-6.5, 1.5, -1.0],
     rotation: [0, Math.PI, 0],
+    normal: [0, 0, -1],  // Artwork faces -Z (north, into room)
     length: 2,
     axis: 'x',
     minPos: -7.5,
@@ -122,6 +155,7 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'East Wall',
     position: [7.5, 1.5, -3.5],
     rotation: [0, -Math.PI / 2, 0],
+    normal: [-1, 0, 0],  // Artwork faces -X (west, into room)
     length: 5,
     axis: 'z',
     minPos: -6,
@@ -133,6 +167,7 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'North Wall (Right Section)',
     position: [6.5, 1.5, -6.0],
     rotation: [0, 0, 0],
+    normal: [0, 0, 1],  // Artwork faces +Z (south, into room)
     length: 2,
     axis: 'x',
     minPos: 5.5,
@@ -144,6 +179,7 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'West Divider (to Room 2)',
     position: [-2.5, 1.5, -3.5],
     rotation: [0, Math.PI / 2, 0],
+    normal: [1, 0, 0],  // Artwork faces +X (east, into Room 3)
     length: 5,
     axis: 'z',
     minPos: -6,
@@ -155,6 +191,7 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'South Wall (Right Section)',
     position: [6.5, 1.5, -1.0],
     rotation: [0, Math.PI, 0],
+    normal: [0, 0, -1],  // Artwork faces -Z (north, into room)
     length: 2,
     axis: 'x',
     minPos: 5.5,
@@ -168,6 +205,7 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'West Wall',
     position: [-2.5, 1.5, -10.5],
     rotation: [0, Math.PI / 2, 0],
+    normal: [1, 0, 0],  // Artwork faces +X (east, into room)
     length: 7,
     axis: 'z',
     minPos: -14,
@@ -179,6 +217,7 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'East Wall',
     position: [2.5, 1.5, -10.5],
     rotation: [0, -Math.PI / 2, 0],
+    normal: [-1, 0, 0],  // Artwork faces -X (west, into room)
     length: 7,
     axis: 'z',
     minPos: -14,
@@ -190,9 +229,34 @@ export const WALL_REGISTRY: WallDefinition[] = [
     name: 'North Wall (Back)',
     position: [0, 2.0, -14.0],
     rotation: [0, 0, 0],
+    normal: [0, 0, 1],  // Artwork faces +Z (south, into room)
     length: 5,
     axis: 'x',
     minPos: -2.5,
+    maxPos: 2.5,
+  },
+  {
+    id: 'room4-south-left',
+    room: 'Room 4',
+    name: 'South Wall (Left Section)',
+    position: [-1.5, 1.5, -7.0],
+    rotation: [0, Math.PI, 0],
+    normal: [0, 0, -1],  // Artwork faces -Z (north, into room)
+    length: 2,
+    axis: 'x',
+    minPos: -2.5,
+    maxPos: -0.5,
+  },
+  {
+    id: 'room4-south-right',
+    room: 'Room 4',
+    name: 'South Wall (Right Section)',
+    position: [1.5, 1.5, -7.0],
+    rotation: [0, Math.PI, 0],
+    normal: [0, 0, -1],  // Artwork faces -Z (north, into room)
+    length: 2,
+    axis: 'x',
+    minPos: 0.5,
     maxPos: 2.5,
   },
 ];

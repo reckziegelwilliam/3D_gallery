@@ -18,7 +18,7 @@ export default function FallbackPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-serif font-bold text-gallery-darkWood">
-              Mom's Gallery
+              Leslie's Gallery
             </h1>
             <Link
               href="/"
@@ -83,7 +83,7 @@ export default function FallbackPage() {
                 >
                   <Image
                     src={selectedArtwork.imagePath}
-                    alt={selectedArtwork.title}
+                    alt={selectedArtwork.title || selectedArtwork.id}
                     fill
                     className="object-contain"
                     priority
@@ -95,7 +95,7 @@ export default function FallbackPage() {
               <div className="flex flex-col justify-center space-y-6 max-h-[70vh] overflow-y-auto">
                 <div>
                   <h2 className="text-4xl font-serif font-bold text-gallery-darkWood mb-2">
-                    {selectedArtwork.title}
+                    {selectedArtwork.title || selectedArtwork.id}
                   </h2>
                   <p className="text-xl text-gallery-accent">
                     {selectedArtwork.year} • {selectedArtwork.medium}
