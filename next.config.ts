@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/webp', 'image/avif'],
   },
+  // Externalize heavy native packages to prevent serverless function bloat
+  serverExternalPackages: ['sharp'],
 };
 
 export default nextConfig;
