@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import { useGalleryStore } from '@/store/galleryStore';
 import Image from 'next/image';
+import { PlacementEditor } from './PlacementEditor';
 
 export function InspectOverlay() {
   // Use Zustand selectors to prevent unnecessary re-renders
@@ -12,6 +13,7 @@ export function InspectOverlay() {
   const exitInspectMode = useGalleryStore((state) => state.exitInspectMode);
   const nextArtwork = useGalleryStore((state) => state.nextArtwork);
   const prevArtwork = useGalleryStore((state) => state.prevArtwork);
+  const isAdminMode = useGalleryStore((state) => state.isAdminMode);
 
   const artwork = artworks.find((a) => a.id === activeArtworkId);
 
@@ -142,6 +144,9 @@ export function InspectOverlay() {
                 </p>
               </div>
             )}
+
+            {/* Admin placement controls */}
+            {isAdminMode && <PlacementEditor artwork={artwork} />}
           </div>
         </div>
 
