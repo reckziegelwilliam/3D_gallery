@@ -13,8 +13,10 @@ import { TourController } from './TourController';
 import { RoomLabels } from './RoomLabels';
 import { ThankYouMessage } from './ThankYouMessage';
 import { InteractionManager } from './InteractionManager';
+import { LoadingScreen } from './LoadingScreen';
 import { GALLERY_CONFIG } from '@/data/galleryConfig';
 import { runArtworkValidation } from '@/utils/validateArtworkPositions';
+import { useTexturePreloader } from '@/hooks/useTexturePreloader';
 
 function LoadingFallback() {
   return (
@@ -26,6 +28,9 @@ function LoadingFallback() {
 }
 
 export function GalleryCanvas() {
+  // Preload all artwork textures with progress tracking
+  const { progress, isLoaded, loadedCount, totalCount } = useTexturePreloader();
+
   // Run artwork position validation in development mode
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
@@ -35,11 +40,23 @@ export function GalleryCanvas() {
 
   return (
     <div className="w-full h-screen">
+      {/* Show loading screen until textures are loaded */}
+      {!isLoaded && (
+        <LoadingScreen 
+          progress={progress} 
+          loadedCount={loadedCount} 
+          totalCount={totalCount} 
+        />
+      )}
+
       <Canvas
         shadows={false}
+        dpr={[1, 1.5]} // Limit pixel ratio for better performance on high-DPI screens
         gl={{ 
           alpha: false,
           antialias: true,
+          powerPreference: 'high-performance',
+          stencil: false,
         }}
         onCreated={({ gl, scene, camera }) => {
           console.log('✓ Canvas created');
@@ -72,11 +89,12 @@ export function GalleryCanvas() {
         </Suspense>
       </Canvas>
 
-      {/* UI Overlay hint */}
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-lg pointer-events-none">
-        <p className="text-sm">Click to enter • WASD to move • Mouse to look around</p>
-      </div>
+      {/* UI Overlay hint - only show when loaded */}
+      {isLoaded && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-lg pointer-events-none">
+          <p className="text-sm">Click to enter • WASD to move • Mouse to look around</p>
+        </div>
+      )}
     </div>
   );
 }
-

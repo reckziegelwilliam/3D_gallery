@@ -3,7 +3,8 @@ export interface Artwork {
   title?: string;
   year: number;
   medium: string;
-  imagePath: string; // e.g., "/art/artwork-01.jpg"
+  imagePath: string; // e.g., "/art/artwork-01.webp"
+  thumbnailPath: string; // e.g., "/art/thumbnails/artwork-01.webp"
 
   // Personal story
   description: string;

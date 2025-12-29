@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, Suspense } from 'react';
+import React, { useRef, useState, Suspense, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import { Artwork } from '@/types/gallery';
@@ -106,10 +106,19 @@ function TexturedCanvas({ imagePath, width, height, wallOffset }: TexturedCanvas
 // ARTWORK FRAME COMPONENT
 // ========================================
 
+// LOD thresholds for texture quality and detail
+const LOD_THRESHOLDS = {
+  FULL_DETAIL: 10,      // < 10m: Full resolution + frame
+  HIGH_RES: 20,         // < 20m: Full resolution, simplified frame
+  THUMBNAIL: 35,        // < 35m: Thumbnail texture
+  HIDDEN: 40,           // >= 40m: Not rendered
+};
+
 export function ArtworkFrame({ artwork }: ArtworkFrameProps) {
-  const { position, rotation, realSizeMeters, imagePath } = artwork;
+  const { position, rotation, realSizeMeters, imagePath, thumbnailPath } = artwork;
   const { camera } = useThree();
   const groupRef = useRef<THREE.Group>(null);
+  const distanceRef = useRef<number>(0);
   
   // Calculate scaled dimensions
   const sizeMultiplier = GALLERY_CONFIG.artwork.sizeMultiplier || 1;
@@ -122,26 +131,34 @@ export function ArtworkFrame({ artwork }: ArtworkFrameProps) {
   const frameWidth = scaledWidth + frameBorder * 2;
   const frameHeight = scaledHeight + frameBorder * 2;
   
-  // LOD state
-  const [lodLevel, setLodLevel] = useState<'full' | 'simplified' | 'hidden'>('full');
+  // LOD state: determines rendering detail level
+  const [lodLevel, setLodLevel] = useState<'full' | 'high' | 'thumbnail' | 'hidden'>('full');
+  
+  // Memoize artwork position vector
+  const artworkPos = useMemo(() => new THREE.Vector3(...position), [position]);
   
   // Calculate LOD based on camera distance
   useFrame(() => {
     if (!groupRef.current) return;
     
-    const artworkPos = new THREE.Vector3(...position);
     const distance = camera.position.distanceTo(artworkPos);
+    distanceRef.current = distance;
     
-    // LOD levels:
-    // 0-25m: Full detail (with frame)
-    // 25-40m: Simplified (no frame detail)
-    // 40m+: Hidden (frustum culling)
-    if (distance < 25) {
-      if (lodLevel !== 'full') setLodLevel('full');
-    } else if (distance < 40) {
-      if (lodLevel !== 'simplified') setLodLevel('simplified');
+    // Determine LOD level based on distance thresholds
+    let newLod: typeof lodLevel;
+    if (distance < LOD_THRESHOLDS.FULL_DETAIL) {
+      newLod = 'full';
+    } else if (distance < LOD_THRESHOLDS.HIGH_RES) {
+      newLod = 'high';
+    } else if (distance < LOD_THRESHOLDS.THUMBNAIL) {
+      newLod = 'thumbnail';
     } else {
-      if (lodLevel !== 'hidden') setLodLevel('hidden');
+      newLod = 'hidden';
+    }
+    
+    // Only update state if LOD changed (prevents unnecessary re-renders)
+    if (newLod !== lodLevel) {
+      setLodLevel(newLod);
     }
   });
   
@@ -152,36 +169,27 @@ export function ArtworkFrame({ artwork }: ArtworkFrameProps) {
     return null;
   }
   
+  // Determine which texture to use based on LOD
+  const currentTexturePath = lodLevel === 'thumbnail' ? thumbnailPath : imagePath;
+  const showFrame = lodLevel === 'full';
+  
   return (
     <group ref={groupRef} position={position} rotation={rotation}>
-      {/* Render based on LOD level */}
-      {lodLevel === 'full' ? (
-        <>
-          {/* Full detail: Frame + Textured Canvas + Plaque */}
-          <mesh position={[0, 0, wallOffset - frameThickness / 2]} castShadow={false}>
-            <boxGeometry args={[frameWidth, frameHeight, frameThickness]} />
-            <meshStandardMaterial color="#3E2723" roughness={0.6} metalness={0.1} />
-          </mesh>
-          
-          {/* Textured artwork with built-in fallback */}
-          <TexturedCanvas 
-            imagePath={imagePath} 
-            width={scaledWidth} 
-            height={scaledHeight}
-            wallOffset={wallOffset}
-          />
-        </>
-      ) : (
-        <>
-          {/* Simplified: Textured plane (no frame) */}
-          <TexturedCanvas 
-            imagePath={imagePath} 
-            width={scaledWidth} 
-            height={scaledHeight}
-            wallOffset={wallOffset}
-          />
-        </>
+      {/* Render frame only at full detail */}
+      {showFrame && (
+        <mesh position={[0, 0, wallOffset - frameThickness / 2]} castShadow={false}>
+          <boxGeometry args={[frameWidth, frameHeight, frameThickness]} />
+          <meshStandardMaterial color="#3E2723" roughness={0.6} metalness={0.1} />
+        </mesh>
       )}
+      
+      {/* Textured artwork - uses thumbnail for distant, full-res for close */}
+      <TexturedCanvas 
+        imagePath={currentTexturePath} 
+        width={scaledWidth} 
+        height={scaledHeight}
+        wallOffset={wallOffset}
+      />
       
       {/* Invisible hitbox for raycasting (always present) */}
       <mesh
