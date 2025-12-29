@@ -6,8 +6,23 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/webp', 'image/avif'],
   },
-  // Externalize heavy native packages to prevent serverless function bloat
-  serverExternalPackages: ['sharp'],
+  // Externalize heavy packages to prevent serverless function bloat
+  serverExternalPackages: [
+    'sharp',
+    'three',
+    '@react-three/fiber',
+    '@react-three/drei',
+    '@react-three/postprocessing',
+    '@react-three/rapier',
+  ],
+  // Exclude heavy packages from output file tracing for API routes
+  outputFileTracingExcludes: {
+    '/api/*': [
+      './node_modules/three/**',
+      './node_modules/@react-three/**',
+      './node_modules/sharp/**',
+    ],
+  },
 };
 
 export default nextConfig;

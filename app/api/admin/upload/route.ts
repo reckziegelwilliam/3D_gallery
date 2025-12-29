@@ -1,26 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
-import sharp from 'sharp';
-import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-const ART_DIR = path.join(process.cwd(), 'public', 'art');
-const THUMB_DIR = path.join(ART_DIR, 'thumbnails');
-
-// WebP conversion settings (matching scripts/optimize-images.js)
-const WEBP_CONFIG = {
-  quality: 85,
-  effort: 6,
-};
-
-const THUMBNAIL_CONFIG = {
-  width: 256,
-  quality: 75,
+// Dynamic import of sharp to prevent bundling in serverless functions
+// This route only works in development (Vercel has read-only filesystem)
+const getSharp = async () => {
+  const sharp = await import('sharp');
+  return sharp.default;
 };
 
 export async function POST(request: NextRequest) {
+  // Check if we're in production (Vercel) - uploads won't work due to read-only filesystem
+  if (process.env.VERCEL) {
+    return NextResponse.json(
+      { error: 'File uploads are not supported in production. Use local development or configure cloud storage.' },
+      { status: 501 }
+    );
+  }
+
+  // Dynamic imports for development only
+  const { writeFile, mkdir } = await import('fs/promises');
+  const { existsSync } = await import('fs');
+  const path = await import('path');
+  const sharp = await getSharp();
+
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+  const ART_DIR = path.join(process.cwd(), 'public', 'art');
+  const THUMB_DIR = path.join(ART_DIR, 'thumbnails');
+
+  // WebP conversion settings (matching scripts/optimize-images.js)
+  const WEBP_CONFIG = {
+    quality: 85,
+    effort: 6,
+  };
+
+  const THUMBNAIL_CONFIG = {
+    width: 256,
+    quality: 75,
+  };
+
   try {
     // Check auth cookie
     const adminCookie = request.cookies.get('gallery-admin-session');
@@ -100,7 +117,7 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer());
 
     // Validate image and get dimensions using Sharp
-    let imageInfo: sharp.Metadata;
+    let imageInfo: { width?: number; height?: number };
     try {
       imageInfo = await sharp(buffer).metadata();
     } catch {
